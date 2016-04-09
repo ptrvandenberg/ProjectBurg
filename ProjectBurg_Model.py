@@ -240,6 +240,8 @@ def solve(dat, week_res, shiftweek_res):
                 m.addConstr(, "Sgt_WE")
                 m.addConstr(, "SenSgt_WE")
 
+# PROGRESS POINT
+
     # AMPL: s.t. Files {d in DAY}: sum {m in MEMBER} x_sf[d,m] = crew[14];
     # AMPL: s.t. Files_Con {d in DAY}: sum {m in MEMBER} (if memrank[m]=1 then x_sf[d,m] else 0) <= 0.5 * sum {m in MEMBER} x_sf[d,m];
 
