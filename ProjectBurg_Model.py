@@ -244,19 +244,41 @@ def solve(dat, week_res, shiftweek_res):
     # AMPL: s.t. Files_Con {d in DAY}: sum {m in MEMBER} (if memrank[m]=1 then x_sf[d,m] else 0) <= 0.5 * sum {m in MEMBER} x_sf[d,m];
 
     for d in dat.days:
-        m.addConstr(x_sf[m,d] = crew[14], "Files")
+        m.addConstr(x_sf[m,d] = dat.shift[14]["crew"], "Files")
         m.addConstr((if dat.member[m]["ranknum"] == 1 then x_sf[m,d] else 0) <= 0.5 * quicksum(x_sf[m,d] for m in dat.members), "Files_Con")
-
-# PROGRESS POINT
 
     # AMPL: s.t. SafStr_Non {nss in 1..5, w in WEEK, m in MEMBER}: x_os[nss+7*(w-1),m] = 0;
     # AMPL: s.t. SafStr_Crew {ssd in 6..7, w in WEEK}: sum {m in MEMBER} x_os[ssd+7*(w-1),m] = crew[15];
     # AMPL: s.t. SafStr_Con {d in DAY}: sum{m in MEMBER} (if memrank[m]=1 then x_os[d,m] else 0) <= 0.75 * sum{m in MEMBER} x_os[d,m];
     # AMPL: s.t. SafStr_Night {w in WEEK, m in MEMBER}: x_os[6+7*(w-1),m] = x_os[7+7*(w-1),m];
 
+    for m in dat.members:
+        for w in range(1,week_res):
+            for nss in range(1,5):
+                m.addConstr(x_os[m,nss+7*(w-1)] = 0, "SafStr_Non")
+
+    for m in dat.members:
+        for ssd in range(6,7):
+            m.addConstr(quicksum(x_os[m,ssd+7*(w-1)] for m in dat.members) = dat.shift[15]["crew"], "SafStr_Crew")
+
+    for d in dat.days:
+        m.addConstr(quicksum(if dat.member[m]["ranknum"]==1 then x_os[m,d] else 0 for m in dat.members) <= 0.75 * quicksum(x_os[m,d] for m in dat.members), "SafStr_Con")
+
+    for m in dat.members:
+        for w in range(1,week_res):
+            m.addConstr(x_os[m,6+7*(w-1)] = x_os[m,7+7*(w-1)], "SafStr_Night")
+
     # AMPL: s.t. Van_Night {w in WEEK, m in MEMBER}: sum {d in 1+7*(w-1)..7*w} x_dv3[d,m] = x_dv3[1+7*(w-1),m] * 7;
     # AMPL: s.t. Rec_Night {w in WEEK, m in MEMBER}: sum {d in 1+7*(w-1)..7*w} x_dr3[d,m] = x_dr3[1+7*(w-1),m] * 7;
     # AMPL: s.t. Sgt_Night {w in WEEK, m in MEMBER}: sum {d in 1+7*(w-1)..7*w} x_ds3[d,m] = x_ds3[1+7*(w-1),m] * 7;
+
+    for m in dat.members:
+        for w in range(1,week_res):
+            m.addConstr(quicksum(x_dv3[m,d] for d in range(1+7*(w-1),7*w)) = x_dv3[m,1+7*(w-1)] * 7, "Van_Night")
+            m.addConstr(quicksum(x_dr3[m,d] for d in range(1+7*(w-1),7*w)) = x_dr3[m,1+7*(w-1)] * 7, "Rec_Night")
+            m.addConstr(quicksum(x_ds3[m,d] for d in range(1+7*(w-1),7*w)) = x_ds3[m,1+7*(w-1)] * 7, "Sgt_Night")
+
+# PROGRESS POINT
 
     # AMPL: s.t. Reco_Night {w in WEEK, m in MEMBER}: x_or[7+7*(w-2)+1,m] = (if leave[7+7*(w-2)+1,m] = 1 then 0 else (if w = 1 then (if shifttime[day0shift[m]] = 23 then 1 else 0) else x_dv3[7+7*(w-2),m] + x_dr3[7+7*(w-2),m] + x_ds3[7+7*(w-2),m]));
     # AMPL: s.t. Reco_Non {nrc in 2..7, w in WEEK, m in MEMBER}: x_or[nrc+7*(w-1),m] = 0;
