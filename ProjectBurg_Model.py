@@ -34,7 +34,7 @@ dataFactory.add_foreign_key("fieldout", "days", ['dayseq', 'dayseq'])
 solutionFactory = TicDatFactory(
     roster = [["memid", "dayseq"], ["value"]])
 
-def solve(dat, week_res, shiftweek_res):
+def solve(dat, week_res, shiftweek_res, shift_res):
 
     assert dataFactory.good_tic_dat_object(dat)
     assert not dataFactory.find_foreign_key_failures(dat)
@@ -283,14 +283,12 @@ def solve(dat, week_res, shiftweek_res):
 
     for m in dat.members:
         for w in range(1,week_res):
-            m.addConstr(x_or[m,7+7*(w-2)+1] = (if dat.leave[m,7+7*(w-2)+1]["value"] == 1 then 0 else (if w == 1 then (if dat.carryover[m]["day0shift"]]["starttime"] == 23 then 1 else 0) else x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)])), "Reco_Night")
+            m.addConstr(x_or[m,7+7*(w-2)+1] = (if dat.leave[m,7+7*(w-2)+1]["value"] == 1 then 0 else (if w == 1 then (if dat.shifts[dat.carryover[m]["day0shift"]]["starttime"] == 23 then 1 else 0) else x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)])), "Reco_Night")
 
     for m in dat.members:
         for w in range(1,week_res):
             for nrc in range(2,7):
                 m.addConstr(x_or[m,nrc+7*(w-1)] = 0, "Reco_Non")
-
-# PROGRESS POINT
 
     # AMPL: s.t. Weekend_Off_7 {w in 1..week_res-1, m in MEMBER}: wo[w,m] <= x_x[7+7*(w-1),m];
     # AMPL: s.t. Weekend_Off_1 {w in 1..week_res-1, m in MEMBER}: wo[w,m] <= x_x[1+7*w,m];
@@ -299,6 +297,30 @@ def solve(dat, week_res, shiftweek_res):
     # AMPL: s.t. Weekend_Off_1fw { w in 0..0, m in MEMBER}: wo[w,m] = (if day0shift[m] >= shift_res - 1 then 1 else 0) * x_x[1,m];
     # AMPL: s.t. Weekend_Off_pre {w in -4..-1, m in MEMBER}: wo[w,m] = (if lastweoff[m] = w then 1 else 0);
     # AMPL: s.t. WO_Periods {per in 0..week_res, m in MEMBER}: sum {w in per-3..per} wo[w,m] >= 1;
+
+    for m in dat.members:
+        for w in range(1,week_res-1):
+            m.addConstr(wo[m,w] <= x_x[m,7+7*(w-1)], "Weekend_Off_7")
+            m.addConstr(wo[m,w] <= x_x[m,1+7*w], "Weekend_Off_1")
+            m.addConstr(wo[m,w] >= x_x[m,7+7*(w-1)] + x_x[m,1+7*w] - 1, "Weekend_Off_71")
+
+    for m in dat.members:
+        for w in range(week_res,week_res):
+            m.addConstr(wo[m,w] = x_x[m,7+7*(w-1)], "Weekend_Off_71w")
+
+    for m in dat.members:
+        for w in range(0,0):
+            m.addConstr(wo[m,w] = (if dat.carryover[m]["day0shift"] >= shift_res - 1 then 1 else 0) * x_x[m,1], "Weekend_Off_1fw")
+
+    for m in dat.members:
+        for w in range(-4,-1):
+            m.addConstr(wo[m,w] = (if dat.carryover[m]["lastWEoff"] == w then 1 else 0), "Weekend_Off_pre")
+
+    for m in dat.members:
+        for per in range(0,week_res):
+            m.addConstr(quicksum(wo[w,m] for w in range(per-3,per)) >= 1, "WO_Periods")
+
+# PROGRESS POINT
 
     # AMPL: s.t. Commit_1 {d in DAY, m in MEMBER}: x_sg1[d,m] = (if leave[d,m] = 1 then 0 else (if commit[d,m] = 1 then 1 else x_sg1[d,m]));
     # AMPL: s.t. Commit_2 {d in DAY, m in MEMBER}: x_sg2[d,m] = (if leave[d,m] = 1 then 0 else (if commit[d,m] = 2 then 1 else x_sg2[d,m]));
