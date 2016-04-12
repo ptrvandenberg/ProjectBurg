@@ -213,7 +213,7 @@ def solve(dat, week_res, shiftweek_res):
         m.addConstr(quicksum(x_ds2[m,d] for m in dat.members) == dat.shift[8]["crew"], "Sgt_2_Crew")
         m.addConstr(quicksum(x_ds3[m,d] for m in dat.members) <= dat.shift[9]["crew"], "Sgt_3_Crew")
 
-    # Add the complex constraints
+    # Add the complex constraints - how to do if-then-else?
         
     # AMPL: s.t. Sequential_Shifts {d in DAY0, m in MEMBER}: (if d = 0 then shifttime[day0shift[m]] else x_dv1[d,m] * shifttime[1] + x_dv2[d,m] * shifttime[2] + x_dv3[d,m] * shifttime[3] + x_dr1[d,m] * shifttime[4] + x_dr2[d,m] * shifttime[5] + x_dr3[d,m] * shifttime[6] + x_ds1[d,m] * shifttime[7] + x_ds2[d,m] * shifttime[8] + x_ds3[d,m] * shifttime[9] + x_sg1[d,m] * shifttime[10] + x_sg2[d,m] * shifttime[11] + x_sg3[d,m] * shifttime[12] + x_sg4[d,m] * shifttime[13] + x_sf[d,m] * shifttime[14] + x_os[d,m] * shifttime[15] + x_or[d,m] * shifttime[16] + x_x[d,m] * shifttime[17]) + 8 + 10 - 24 <= (if d = week_res * weekday_res then 24 else x_dv1[d+1,m] * shifttime[1] + x_dv2[d+1,m] * shifttime[2] + x_dv3[d+1,m] * shifttime[3] + x_dr1[d+1,m] * shifttime[4] + x_dr2[d+1,m] * shifttime[5] + x_dr3[d+1,m] * shifttime[6] + x_ds1[d+1,m] * shifttime[7] + x_ds2[d+1,m] * shifttime[8] + x_ds3[d+1,m] * shifttime[9] + x_sg1[d+1,m] * shifttime[10] + x_sg2[d+1,m] * shifttime[11] + x_sg3[d+1,m] * shifttime[12] + x_sg4[d+1,m] * shifttime[13] + x_sf[d+1,m] * shifttime[14] + x_os[d+1,m] * shifttime[15]  + x_or[d+1,m] * shifttime[16]+ x_x[d+1,m] * 24);
 
@@ -278,10 +278,19 @@ def solve(dat, week_res, shiftweek_res):
             m.addConstr(quicksum(x_dr3[m,d] for d in range(1+7*(w-1),7*w)) = x_dr3[m,1+7*(w-1)] * 7, "Rec_Night")
             m.addConstr(quicksum(x_ds3[m,d] for d in range(1+7*(w-1),7*w)) = x_ds3[m,1+7*(w-1)] * 7, "Sgt_Night")
 
-# PROGRESS POINT
-
     # AMPL: s.t. Reco_Night {w in WEEK, m in MEMBER}: x_or[7+7*(w-2)+1,m] = (if leave[7+7*(w-2)+1,m] = 1 then 0 else (if w = 1 then (if shifttime[day0shift[m]] = 23 then 1 else 0) else x_dv3[7+7*(w-2),m] + x_dr3[7+7*(w-2),m] + x_ds3[7+7*(w-2),m]));
     # AMPL: s.t. Reco_Non {nrc in 2..7, w in WEEK, m in MEMBER}: x_or[nrc+7*(w-1),m] = 0;
+
+    for m in dat.members:
+        for w in range(1,week_res):
+            m.addConstr(x_or[m,7+7*(w-2)+1] = (if dat.leave[m,7+7*(w-2)+1]["value"] == 1 then 0 else (if w == 1 then (if dat.carryover[m]["day0shift"]]["starttime"] == 23 then 1 else 0) else x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)])), "Reco_Night")
+
+    for m in dat.members:
+        for w in range(1,week_res):
+            for nrc in range(2,7):
+                m.addConstr(x_or[m,nrc+7*(w-1)] = 0, "Reco_Non")
+
+# PROGRESS POINT
 
     # AMPL: s.t. Weekend_Off_7 {w in 1..week_res-1, m in MEMBER}: wo[w,m] <= x_x[7+7*(w-1),m];
     # AMPL: s.t. Weekend_Off_1 {w in 1..week_res-1, m in MEMBER}: wo[w,m] <= x_x[1+7*w,m];
