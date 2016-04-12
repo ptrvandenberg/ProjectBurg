@@ -231,23 +231,23 @@ def solve(dat, week_res, shiftweek_res):
             m.addConstr(x_sg[m,d] = (if dat.member[m]["ranknum"] == 5 then 1 - x_ds[m,d] - x_or[m,d] - x_x[m,d] else x_sg[m,d]), "Sgt_Stat")
             m.addConstr(x_sg[m,d] = (if dat.member[m]["ranknum"] == 6 then 1 - x_x[m,d] else x_sg[m,d]), "SenSgr_Stat")
 
-# PROGRESS POINT
-
     # AMPL: s.t. Sgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 5 then 1 - x_ds[1+6*we+7*(w-1),m] - x_or[1+6*we+7*(w-1),m] else x_x[1+6*we+7*(w-1),m]);
     # AMPL: s.t. SenSgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 6 then 1 else x_x[1+6*we+7*(w-1),m]);
 
     for m in dat.members:
         for w in range(1,week_res):
             for we in range(0,1):
-                m.addConstr(, "Sgt_WE")
-                m.addConstr(, "SenSgt_WE")
+                m.addConstr(x_x[m,1+6*we+7*(w-1)] = (if dat.member[m]["ranknum"] == 5 then 1 - x_ds[m,1+6*we+7*(w-1)] - x_or[m,1+6*we+7*(w-1)] else x_x[m,1+6*we+7*(w-1)]), "Sgt_WE")
+                m.addConstr(x_x[m,1+6*we+7*(w-1)] = (if dat.member[m]["ranknum"] == 6 then 1 else x_x[m,1+6*we+7*(w-1)]), "SenSgt_WE")
 
     # AMPL: s.t. Files {d in DAY}: sum {m in MEMBER} x_sf[d,m] = crew[14];
     # AMPL: s.t. Files_Con {d in DAY}: sum {m in MEMBER} (if memrank[m]=1 then x_sf[d,m] else 0) <= 0.5 * sum {m in MEMBER} x_sf[d,m];
 
     for d in dat.days:
-        m.addConstr(, "Files")
-        m.addConstr(, "Files_Con")
+        m.addConstr(x_sf[m,d] = crew[14], "Files")
+        m.addConstr((if dat.member[m]["ranknum"] == 1 then x_sf[m,d] else 0) <= 0.5 * quicksum(x_sf[m,d] for m in dat.members), "Files_Con")
+
+# PROGRESS POINT
 
     # AMPL: s.t. SafStr_Non {nss in 1..5, w in WEEK, m in MEMBER}: x_os[nss+7*(w-1),m] = 0;
     # AMPL: s.t. SafStr_Crew {ssd in 6..7, w in WEEK}: sum {m in MEMBER} x_os[ssd+7*(w-1),m] = crew[15];
