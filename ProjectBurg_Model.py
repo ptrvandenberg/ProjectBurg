@@ -219,7 +219,7 @@ def solve(dat, week_res, shiftweek_res):
 
     for m in dat.members:
         for d in range(0,week_res * 7):
-            m.addConstr((if d = 0 then dat.shifts[dat.carryover[m]["day0shift"]]["starttime"] else x_dv1[m,d] * dat.shifts[1]["starttime"] + x_dv2[m,d] * dat.shifts[2]["starttime"] + x_dv3[m,d] * dat.shifts[3]["starttime"] + x_dr1[m,d] * dat.shifts[4]["starttime"] + x_dr2[m,d] * dat.shifts[5]["starttime"] + x_dr3[m,d] * dat.shifts[6]["starttime"] + x_ds1[m,d] * dat.shifts[7]["starttime"] + x_ds2[m,d] * dat.shifts[8]["starttime"] + x_ds3[m,d] * dat.shifts[9]["starttime"] + x_sg1[m,d] * dat.shifts[10]["starttime"] + x_sg2[m,d] * dat.shifts[11]["starttime"] + x_sg3[m,d] * dat.shifts[12]["starttime"] + x_sg4[m,d] * dat.shifts[13]["starttime"] + x_sf[m,d] * dat.shifts[14]["starttime"] + x_os[m,d] * dat.shifts[15]["starttime"] + x_or[m,d] * dat.shifts[16]["starttime"] + x_x[m,d] * dat.shifts[17]["starttime"]) + 8 + 10 - 24 <= (if d = week_res * 7 then 24 else x_dv1[m,d+1] * dat.shifts[1]["starttime"] + x_dv2[m,d+1] * dat.shifts[2]["starttime"] + x_dv3[m,d+1] * dat.shifts[3]["starttime"] + x_dr1[m,d+1] * dat.shifts[4]["starttime"] + x_dr2[m,d+1] * dat.shifts[5]["starttime"] + x_dr3[m,d+1] * dat.shifts[6]["starttime"] + x_ds1[m,d+1] * dat.shifts[7]["starttime"] + x_ds2[m,d+1] * dat.shifts[8]["starttime"] + x_ds3[m,d+1] * dat.shifts[9]["starttime"] + x_sg1[m,d+1] * dat.shifts[10]["starttime"] + x_sg2[m,d+1] * dat.shifts[11]["starttime"] + x_sg3[m,d+1] * dat.shifts[12]["starttime"] + x_sg4[m,d+1] * dat.shifts[13]["starttime"] + x_sf[m,d+1] * dat.shifts[14]["starttime"] + x_os[m,d+1] * dat.shifts[15]["starttime"] + x_or[m,d+1] * dat.shifts[16]["starttime"] + x_x[m,d+1] * 24), "Sequential_Shifts")
+            m.addConstr((if d == 0 then dat.shifts[dat.carryover[m]["day0shift"]]["starttime"] else x_dv1[m,d] * dat.shifts[1]["starttime"] + x_dv2[m,d] * dat.shifts[2]["starttime"] + x_dv3[m,d] * dat.shifts[3]["starttime"] + x_dr1[m,d] * dat.shifts[4]["starttime"] + x_dr2[m,d] * dat.shifts[5]["starttime"] + x_dr3[m,d] * dat.shifts[6]["starttime"] + x_ds1[m,d] * dat.shifts[7]["starttime"] + x_ds2[m,d] * dat.shifts[8]["starttime"] + x_ds3[m,d] * dat.shifts[9]["starttime"] + x_sg1[m,d] * dat.shifts[10]["starttime"] + x_sg2[m,d] * dat.shifts[11]["starttime"] + x_sg3[m,d] * dat.shifts[12]["starttime"] + x_sg4[m,d] * dat.shifts[13]["starttime"] + x_sf[m,d] * dat.shifts[14]["starttime"] + x_os[m,d] * dat.shifts[15]["starttime"] + x_or[m,d] * dat.shifts[16]["starttime"] + x_x[m,d] * dat.shifts[17]["starttime"]) + 8 + 10 - 24 <= (if d == week_res * 7 then 24 else x_dv1[m,d+1] * dat.shifts[1]["starttime"] + x_dv2[m,d+1] * dat.shifts[2]["starttime"] + x_dv3[m,d+1] * dat.shifts[3]["starttime"] + x_dr1[m,d+1] * dat.shifts[4]["starttime"] + x_dr2[m,d+1] * dat.shifts[5]["starttime"] + x_dr3[m,d+1] * dat.shifts[6]["starttime"] + x_ds1[m,d+1] * dat.shifts[7]["starttime"] + x_ds2[m,d+1] * dat.shifts[8]["starttime"] + x_ds3[m,d+1] * dat.shifts[9]["starttime"] + x_sg1[m,d+1] * dat.shifts[10]["starttime"] + x_sg2[m,d+1] * dat.shifts[11]["starttime"] + x_sg3[m,d+1] * dat.shifts[12]["starttime"] + x_sg4[m,d+1] * dat.shifts[13]["starttime"] + x_sf[m,d+1] * dat.shifts[14]["starttime"] + x_os[m,d+1] * dat.shifts[15]["starttime"] + x_or[m,d+1] * dat.shifts[16]["starttime"] + x_x[m,d+1] * 24), "Sequential_Shifts")
 
     # AMPL: s.t. Sgt_Rank {d in DAY, m in MEMBER}: x_ds[d,m] = (if memrank[m] <> 5 then 0 else x_ds[d,m]);
     # AMPL: s.t. Sgt_Stat {d in DAY, m in MEMBER}: x_sg[d,m] = (if memrank[m] = 5 then 1 - x_ds[d,m] - x_or[d,m] - x_x[d,m] else x_sg[d,m]);
@@ -227,9 +227,11 @@ def solve(dat, week_res, shiftweek_res):
 
     for m in dat.members:
         for d in dat.days:
-            m.addConstr(, "Sgt_Rank")
-            m.addConstr(, "Sgt_Stat")
-            m.addConstr(, "SenSgr_Stat")
+            m.addConstr(x_ds[m,d] = (if dat.member[m]["ranknum"] <> 5 then 0 else x_ds[m,d]), "Sgt_Rank")
+            m.addConstr(x_sg[m,d] = (if dat.member[m]["ranknum"] == 5 then 1 - x_ds[m,d] - x_or[m,d] - x_x[m,d] else x_sg[m,d]), "Sgt_Stat")
+            m.addConstr(x_sg[m,d] = (if dat.member[m]["ranknum"] == 6 then 1 - x_x[m,d] else x_sg[m,d]), "SenSgr_Stat")
+
+# PROGRESS POINT
 
     # AMPL: s.t. Sgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 5 then 1 - x_ds[1+6*we+7*(w-1),m] - x_or[1+6*we+7*(w-1),m] else x_x[1+6*we+7*(w-1),m]);
     # AMPL: s.t. SenSgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 6 then 1 else x_x[1+6*we+7*(w-1),m]);
@@ -239,8 +241,6 @@ def solve(dat, week_res, shiftweek_res):
             for we in range(0,1):
                 m.addConstr(, "Sgt_WE")
                 m.addConstr(, "SenSgt_WE")
-
-# PROGRESS POINT
 
     # AMPL: s.t. Files {d in DAY}: sum {m in MEMBER} x_sf[d,m] = crew[14];
     # AMPL: s.t. Files_Con {d in DAY}: sum {m in MEMBER} (if memrank[m]=1 then x_sf[d,m] else 0) <= 0.5 * sum {m in MEMBER} x_sf[d,m];
