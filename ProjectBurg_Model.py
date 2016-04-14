@@ -320,16 +320,26 @@ def solve(dat, week_res, shiftweek_res, shift_res):
         for per in range(0,week_res):
             m.addConstr(quicksum(wo[w,m] for w in range(per-3,per)) >= 1, "WO_Periods")
 
-# PROGRESS POINT
-
     # AMPL: s.t. Commit_1 {d in DAY, m in MEMBER}: x_sg1[d,m] = (if leave[d,m] = 1 then 0 else (if commit[d,m] = 1 then 1 else x_sg1[d,m]));
     # AMPL: s.t. Commit_2 {d in DAY, m in MEMBER}: x_sg2[d,m] = (if leave[d,m] = 1 then 0 else (if commit[d,m] = 2 then 1 else x_sg2[d,m]));
     # AMPL: s.t. Commit_3 {d in DAY, m in MEMBER}: x_sg3[d,m] = (if leave[d,m] = 1 then 0 else (if commit[d,m] = 3 then 1 else x_sg3[d,m]));
     # AMPL: s.t. Commit_4 {d in DAY, m in MEMBER}: x_sg4[d,m] = (if leave[d,m] = 1 then 0 else (if commit[d,m] = 4 then 1 else x_sg4[d,m]));
 
+    for m in dat.members:
+        for d in dat.days:
+            m.addConstr(x_sg1[m,d] = (if dat.leave[m,d]["value"] = 1 then 0 else (if dat.commitment[m,d]["value"] = 1 then 1 else x_sg1[m,d])), "Commit_1")
+            m.addConstr(x_sg2[m,d] = (if dat.leave[m,d]["value"] = 1 then 0 else (if dat.commitment[m,d]["value"] = 2 then 1 else x_sg2[m,d])), "Commit_2")
+            m.addConstr(x_sg3[m,d] = (if dat.leave[m,d]["value"] = 1 then 0 else (if dat.commitment[m,d]["value"] = 3 then 1 else x_sg3[m,d])), "Commit_3")
+            m.addConstr(x_sg4[m,d] = (if dat.leave[m,d]["value"] = 1 then 0 else (if dat.commitment[m,d]["value"] = 4 then 1 else x_sg4[m,d])), "Commit_4")
+
     # AMPL: s.t. FieldOut_Van {d in DAY, m in MEMBER}: x_dv[d,m] <= 1 - fieldout[d,m];
     # AMPL: s.t. FieldOut_SafStr {d in DAY, m in MEMBER}: x_os[d,m] <= 1 - fieldout[d,m];
   
+    for m in dat.members:
+        for d in dat.days:
+            m.addConstr(x_dv[m,d] <= 1 - dat.fieldout[m,d]["value"], "FieldOut_Van")
+            m.addConstr(x_os[m,d] <= 1 - dat.fieldout[m,d]["value"], "FieldOut_SafStr")
+
     # Solve
     m.optimize()
 
