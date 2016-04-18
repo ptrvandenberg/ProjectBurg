@@ -229,20 +229,25 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     # AMPL: s.t. Sgt_Rank {d in DAY, m in MEMBER}: x_ds[d,m] = (if memrank[m] <> 5 then 0 else x_ds[d,m]);
     # AMPL: s.t. Sgt_Stat {d in DAY, m in MEMBER}: x_sg[d,m] = (if memrank[m] = 5 then 1 - x_ds[d,m] - x_or[d,m] - x_x[d,m] else x_sg[d,m]);
+
+    for m in dat.members:
+        for d in dat.days:
+            if dat.member[m]["ranknum"] != 5:
+                m.addConstr(x_ds[m,d] = 0, "Sgt_Rank")
+            else:
+                m.addConstr(x_sg[m,d] = 1 - x_ds[m,d] - x_or[m,d] - x_x[m,d], "Sgt_Stat")
+
     # AMPL: s.t. SenSgt_Stat {d in DAY, m in MEMBER}: x_sg[d,m] = (if memrank[m] = 6 then 1 - x_x[d,m] else x_sg[d,m]);
 
     for m in dat.members:
         for d in dat.days:
-        for d in dat.days:
-            if dat.member[m]["ranknum"] != 5:
-                m.addConstr(x_ds[m,d] = 0, "Sgt_Rank")
-            m.addConstr(x_sg[m,d] = 1 - x_ds[m,d] - x_or[m,d] - x_x[m,d] if dat.member[m]["ranknum"] == 5, "Sgt_Stat")
-            m.addConstr(x_sg[m,d] = 1 - x_x[m,d] if dat.member[m]["ranknum"] == 6, "SenSgr_Stat")
+            if dat.member[m]["ranknum"] == 6:
+                m.addConstr(x_sg[m,d] = 1 - x_x[m,d], "SenSgr_Stat")
+
+# PROGRESS MARK
 
     # AMPL: s.t. Sgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 5 then 1 - x_ds[1+6*we+7*(w-1),m] - x_or[1+6*we+7*(w-1),m] else x_x[1+6*we+7*(w-1),m]);
     # AMPL: s.t. SenSgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 6 then 1 else x_x[1+6*we+7*(w-1),m]);
-
-# PROGRESS MARK
 
     for m in dat.members:
         for w in range(1,week_res):
