@@ -247,13 +247,25 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 # PROGRESS MARK
 
     # AMPL: s.t. Sgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 5 then 1 - x_ds[1+6*we+7*(w-1),m] - x_or[1+6*we+7*(w-1),m] else x_x[1+6*we+7*(w-1),m]);
+
+    for m in dat.members:
+        for w in range(1,week_res):
+            for we in range(0,1):
+                if dat.member[m]["ranknum"] == 5:
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = 1 - x_ds[m,1+6*we+7*(w-1)] - x_or[m,1+6*we+7*(w-1)], "Sgt_WE")
+                else:
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = x_x[m,1+6*we+7*(w-1)], "Sgt_WE")
+
+
     # AMPL: s.t. SenSgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 6 then 1 else x_x[1+6*we+7*(w-1),m]);
 
     for m in dat.members:
         for w in range(1,week_res):
             for we in range(0,1):
-                m.addConstr(x_x[m,1+6*we+7*(w-1)] = (if dat.member[m]["ranknum"] == 5 then 1 - x_ds[m,1+6*we+7*(w-1)] - x_or[m,1+6*we+7*(w-1)] else x_x[m,1+6*we+7*(w-1)]), "Sgt_WE")
-                m.addConstr(x_x[m,1+6*we+7*(w-1)] = (if dat.member[m]["ranknum"] == 6 then 1 else x_x[m,1+6*we+7*(w-1)]), "SenSgt_WE")
+                if dat.member[m]["ranknum"] == 6:
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = 1, "SenSgt_WE")
+                else:
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = x_x[m,1+6*we+7*(w-1)], "SenSgt_WE")
 
     # AMPL: s.t. Files {d in DAY}: sum {m in MEMBER} x_sf[d,m] = crew[14];
     # AMPL: s.t. Files_Con {d in DAY}: sum {m in MEMBER} (if memrank[m]=1 then x_sf[d,m] else 0) <= 0.5 * sum {m in MEMBER} x_sf[d,m];
