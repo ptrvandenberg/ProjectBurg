@@ -265,14 +265,13 @@ def solve(dat, week_res, shiftweek_res, shift_res):
                 else:
                     m.addConstr(x_x[m,1+6*we+7*(w-1)] = x_x[m,1+6*we+7*(w-1)], "SenSgt_WE")
 
-# PROGRESS MARK
-
     # AMPL: s.t. Files {d in DAY}: sum {m in MEMBER} x_sf[d,m] = crew[14];
     # AMPL: s.t. Files_Con {d in DAY}: sum {m in MEMBER} (if memrank[m]=1 then x_sf[d,m] else 0) <= 0.5 * sum {m in MEMBER} x_sf[d,m];
 
     for d in dat.days:
         m.addConstr(x_sf[m,d] = dat.shift[14]["crew"], "Files")
-        m.addConstr((if dat.member[m]["ranknum"] == 1 then x_sf[m,d] else 0) <= 0.5 * quicksum(x_sf[m,d] for m in dat.members), "Files_Con")
+        if dat.member[m]["ranknum"] == 1:
+            m.addConstr(x_sf[m,d] <= 0.5 * quicksum(x_sf[m,d] for m in dat.members), "Files_Con")
 
     # AMPL: s.t. SafStr_Non {nss in 1..5, w in WEEK, m in MEMBER}: x_os[nss+7*(w-1),m] = 0;
     # AMPL: s.t. SafStr_Crew {ssd in 6..7, w in WEEK}: sum {m in MEMBER} x_os[ssd+7*(w-1),m] = crew[15];
@@ -289,7 +288,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
             m.addConstr(quicksum(x_os[m,ssd+7*(w-1)] for m in dat.members) = dat.shift[15]["crew"], "SafStr_Crew")
 
     for d in dat.days:
-        m.addConstr(quicksum(if dat.member[m]["ranknum"]==1 then x_os[m,d] else 0 for m in dat.members) <= 0.75 * quicksum(x_os[m,d] for m in dat.members), "SafStr_Con")
+        m.addConstr(quicksum(x_os[m,d] for m in dat.members if dat.member[m]["ranknum"]==1) <= 0.75 * quicksum(x_os[m,d] for m in dat.members), "SafStr_Con")
 
     for m in dat.members:
         for w in range(1,week_res):
@@ -310,7 +309,17 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for w in range(1,week_res):
-            m.addConstr(x_or[m,7+7*(w-2)+1] = (if dat.leave[m,7+7*(w-2)+1]["value"] == 1 then 0 else (if w == 1 then (if dat.shifts[dat.carryover[m]["day0shift"]]["starttime"] == 23 then 1 else 0) else x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)])), "Reco_Night")
+            if dat.leave[m,7+7*(w-2)+1]["value"] == 1:
+                m.addConstr(x_or[m,7+7*(w-2)+1] = 0, "Reco_Night")
+            elif w == 1:
+                if dat.shifts[dat.carryover[m]["day0shift"]]["starttime"] == 23:
+                    m.addConstr(x_or[m,7+7*(w-2)+1] = 1, "Reco_Night")
+                else:
+                    m.addConstr(x_or[m,7+7*(w-2)+1] = 0, "Reco_Night")
+            else:
+                m.addConstr(x_or[m,7+7*(w-2)+1] = x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)], "Reco_Night")
+
+# PROGRESS MARK
 
     for m in dat.members:
         for w in range(1,week_res):
