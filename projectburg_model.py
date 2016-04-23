@@ -233,16 +233,16 @@ def solve(dat, week_res, shiftweek_res, shift_res):
     for m in dat.members:
         for d in dat.days:
             if dat.members[m]["ranknum"] != 5:
-                m.addConstr(x_ds[m,d] = 0, "Sgt_Rank")
+                m.addConstr(x_ds[m,d] == 0, "Sgt_Rank")
             else:
-                m.addConstr(x_sg[m,d] = 1 - x_ds[m,d] - x_or[m,d] - x_x[m,d], "Sgt_Stat")
+                m.addConstr(x_sg[m,d] == 1 - x_ds[m,d] - x_or[m,d] - x_x[m,d], "Sgt_Stat")
 
     # AMPL: s.t. SenSgt_Stat {d in DAY, m in MEMBER}: x_sg[d,m] = (if memrank[m] = 6 then 1 - x_x[d,m] else x_sg[d,m]);
 
     for m in dat.members:
         for d in dat.days:
             if dat.members[m]["ranknum"] == 6:
-                m.addConstr(x_sg[m,d] = 1 - x_x[m,d], "SenSgr_Stat")
+                m.addConstr(x_sg[m,d] == 1 - x_x[m,d], "SenSgr_Stat")
 
     # AMPL: s.t. Sgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 5 then 1 - x_ds[1+6*we+7*(w-1),m] - x_or[1+6*we+7*(w-1),m] else x_x[1+6*we+7*(w-1),m]);
 
@@ -250,9 +250,9 @@ def solve(dat, week_res, shiftweek_res, shift_res):
         for w in range(1,week_res):
             for we in range(0,1):
                 if dat.members[m]["ranknum"] == 5:
-                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = 1 - x_ds[m,1+6*we+7*(w-1)] - x_or[m,1+6*we+7*(w-1)], "Sgt_WE")
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] == 1 - x_ds[m,1+6*we+7*(w-1)] - x_or[m,1+6*we+7*(w-1)], "Sgt_WE")
                 else:
-                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = x_x[m,1+6*we+7*(w-1)], "Sgt_WE")
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] == x_x[m,1+6*we+7*(w-1)], "Sgt_WE")
 
 
     # AMPL: s.t. SenSgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 6 then 1 else x_x[1+6*we+7*(w-1),m]);
@@ -261,15 +261,15 @@ def solve(dat, week_res, shiftweek_res, shift_res):
         for w in range(1,week_res):
             for we in range(0,1):
                 if dat.members[m]["ranknum"] == 6:
-                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = 1, "SenSgt_WE")
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] == 1, "SenSgt_WE")
                 else:
-                    m.addConstr(x_x[m,1+6*we+7*(w-1)] = x_x[m,1+6*we+7*(w-1)], "SenSgt_WE")
+                    m.addConstr(x_x[m,1+6*we+7*(w-1)] == x_x[m,1+6*we+7*(w-1)], "SenSgt_WE")
 
     # AMPL: s.t. Files {d in DAY}: sum {m in MEMBER} x_sf[d,m] = crew[14];
     # AMPL: s.t. Files_Con {d in DAY}: sum {m in MEMBER} (if memrank[m]=1 then x_sf[d,m] else 0) <= 0.5 * sum {m in MEMBER} x_sf[d,m];
 
     for d in dat.days:
-        m.addConstr(x_sf[m,d] = dat.shift[14]["crew"], "Files")
+        m.addConstr(x_sf[m,d] == dat.shift[14]["crew"], "Files")
         if dat.members[m]["ranknum"] == 1:
             m.addConstr(x_sf[m,d] <= 0.5 * quicksum(x_sf[m,d] for m in dat.members), "Files_Con")
 
@@ -281,18 +281,18 @@ def solve(dat, week_res, shiftweek_res, shift_res):
     for m in dat.members:
         for w in range(1,week_res):
             for nss in range(1,5):
-                m.addConstr(x_os[m,nss+7*(w-1)] = 0, "SafStr_Non")
+                m.addConstr(x_os[m,nss+7*(w-1)] == 0, "SafStr_Non")
 
     for m in dat.members:
         for ssd in range(6,7):
-            m.addConstr(quicksum(x_os[m,ssd+7*(w-1)] for m in dat.members) = dat.shifts[15]["crew"], "SafStr_Crew")
+            m.addConstr(quicksum(x_os[m,ssd+7*(w-1)] for m in dat.members) == dat.shifts[15]["crew"], "SafStr_Crew")
 
     for d in dat.days:
         m.addConstr(quicksum(x_os[m,d] for m in dat.members if dat.members[m]["ranknum"]==1) <= 0.75 * quicksum(x_os[m,d] for m in dat.members), "SafStr_Con")
 
     for m in dat.members:
         for w in range(1,week_res):
-            m.addConstr(x_os[m,6+7*(w-1)] = x_os[m,7+7*(w-1)], "SafStr_Night")
+            m.addConstr(x_os[m,6+7*(w-1)] == x_os[m,7+7*(w-1)], "SafStr_Night")
 
     # AMPL: s.t. Van_Night {w in WEEK, m in MEMBER}: sum {d in 1+7*(w-1)..7*w} x_dv3[d,m] = x_dv3[1+7*(w-1),m] * 7;
     # AMPL: s.t. Rec_Night {w in WEEK, m in MEMBER}: sum {d in 1+7*(w-1)..7*w} x_dr3[d,m] = x_dr3[1+7*(w-1),m] * 7;
@@ -300,9 +300,9 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for w in range(1,week_res):
-            m.addConstr(quicksum(x_dv3[m,d] for d in range(1+7*(w-1),7*w)) = x_dv3[m,1+7*(w-1)] * 7, "Van_Night")
-            m.addConstr(quicksum(x_dr3[m,d] for d in range(1+7*(w-1),7*w)) = x_dr3[m,1+7*(w-1)] * 7, "Rec_Night")
-            m.addConstr(quicksum(x_ds3[m,d] for d in range(1+7*(w-1),7*w)) = x_ds3[m,1+7*(w-1)] * 7, "Sgt_Night")
+            m.addConstr(quicksum(x_dv3[m,d] for d in range(1+7*(w-1),7*w)) == x_dv3[m,1+7*(w-1)] * 7, "Van_Night")
+            m.addConstr(quicksum(x_dr3[m,d] for d in range(1+7*(w-1),7*w)) == x_dr3[m,1+7*(w-1)] * 7, "Rec_Night")
+            m.addConstr(quicksum(x_ds3[m,d] for d in range(1+7*(w-1),7*w)) == x_ds3[m,1+7*(w-1)] * 7, "Sgt_Night")
 
     # AMPL: s.t. Reco_Night {w in WEEK, m in MEMBER}: x_or[7+7*(w-2)+1,m] = (if leave[7+7*(w-2)+1,m] = 1 then 0 else (if w = 1 then (if shifttime[day0shift[m]] = 23 then 1 else 0) else x_dv3[7+7*(w-2),m] + x_dr3[7+7*(w-2),m] + x_ds3[7+7*(w-2),m]));
     # AMPL: s.t. Reco_Non {nrc in 2..7, w in WEEK, m in MEMBER}: x_or[nrc+7*(w-1),m] = 0;
@@ -310,19 +310,19 @@ def solve(dat, week_res, shiftweek_res, shift_res):
     for m in dat.members:
         for w in range(1,week_res):
             if dat.leave[m,7+7*(w-2)+1]["value"] == 1:
-                m.addConstr(x_or[m,7+7*(w-2)+1] = 0, "Reco_Night")
+                m.addConstr(x_or[m,7+7*(w-2)+1] == 0, "Reco_Night")
             elif w == 1:
                 if dat.shifts[dat.carryover[m]["day0shift"]]["starttime"] == 23:
-                    m.addConstr(x_or[m,7+7*(w-2)+1] = 1, "Reco_Night")
+                    m.addConstr(x_or[m,7+7*(w-2)+1] == 1, "Reco_Night")
                 else:
-                    m.addConstr(x_or[m,7+7*(w-2)+1] = 0, "Reco_Night")
+                    m.addConstr(x_or[m,7+7*(w-2)+1] == 0, "Reco_Night")
             else:
-                m.addConstr(x_or[m,7+7*(w-2)+1] = x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)], "Reco_Night")
+                m.addConstr(x_or[m,7+7*(w-2)+1] == x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)], "Reco_Night")
 
     for m in dat.members:
         for w in range(1,week_res):
             for nrc in range(2,7):
-                m.addConstr(x_or[m,nrc+7*(w-1)] = 0, "Reco_Non")
+                m.addConstr(x_or[m,nrc+7*(w-1)] == 0, "Reco_Non")
 
     # AMPL: s.t. Weekend_Off_7 {w in 1..week_res-1, m in MEMBER}: wo[w,m] <= x_x[7+7*(w-1),m];
     # AMPL: s.t. Weekend_Off_1 {w in 1..week_res-1, m in MEMBER}: wo[w,m] <= x_x[1+7*w,m];
@@ -340,21 +340,21 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for w in range(week_res,week_res):
-            m.addConstr(wo[m,w] = x_x[m,7+7*(w-1)], "Weekend_Off_71w")
+            m.addConstr(wo[m,w] == x_x[m,7+7*(w-1)], "Weekend_Off_71w")
 
     for m in dat.members:
         for w in range(0,0):
             if dat.carryover[m]["day0shift"] >= shift_res - 1:
-                m.addConstr(wo[m,w] = x_x[m,1], "Weekend_Off_1fw")
+                m.addConstr(wo[m,w] == x_x[m,1], "Weekend_Off_1fw")
             else:
-                m.addConstr(wo[m,w] = 0, "Weekend_Off_1fw")
+                m.addConstr(wo[m,w] == 0, "Weekend_Off_1fw")
 
     for m in dat.members:
         for w in range(-4,-1):
             if dat.carryover[m]["lastWEoff"] == w:
-                m.addConstr(wo[m,w] = 1, "Weekend_Off_pre")
+                m.addConstr(wo[m,w] == 1, "Weekend_Off_pre")
             else:
-                m.addConstr(wo[m,w] = 0, "Weekend_Off_pre")
+                m.addConstr(wo[m,w] == 0, "Weekend_Off_pre")
 
     for m in dat.members:
         for per in range(0,week_res):
@@ -368,18 +368,18 @@ def solve(dat, week_res, shiftweek_res, shift_res):
     for m in dat.members:
         for d in dat.days:
             if dat.leave[m,d]["value"] == 1:
-                m.addConstr(x_sg1[m,d] = 0, "Commit_1")
-                m.addConstr(x_sg2[m,d] = 0, "Commit_2")
-                m.addConstr(x_sg3[m,d] = 0, "Commit_3")
-                m.addConstr(x_sg4[m,d] = 0, "Commit_4")
+                m.addConstr(x_sg1[m,d] == 0, "Commit_1")
+                m.addConstr(x_sg2[m,d] == 0, "Commit_2")
+                m.addConstr(x_sg3[m,d] == 0, "Commit_3")
+                m.addConstr(x_sg4[m,d] == 0, "Commit_4")
             elif dat.commitment[m,d]["value"] == 1:
-                m.addConstr(x_sg1[m,d] = 1, "Commit_1")
+                m.addConstr(x_sg1[m,d] == 1, "Commit_1")
             elif dat.commitment[m,d]["value"] == 2:
-                m.addConstr(x_sg2[m,d] = 1, "Commit_2")
+                m.addConstr(x_sg2[m,d] == 1, "Commit_2")
             elif dat.commitment[m,d]["value"] == 3:
-                m.addConstr(x_sg3[m,d] = 1, "Commit_3")
+                m.addConstr(x_sg3[m,d] == 1, "Commit_3")
             elif dat.commitment[m,d]["value"] == 4:
-                m.addConstr(x_sg4[m,d] = 1, "Commit_4")
+                m.addConstr(x_sg4[m,d] == 1, "Commit_4")
 
     # AMPL: s.t. FieldOut_Van {d in DAY, m in MEMBER}: x_dv[d,m] <= 1 - fieldout[d,m];
     # AMPL: s.t. FieldOut_SafStr {d in DAY, m in MEMBER}: x_os[d,m] <= 1 - fieldout[d,m];
