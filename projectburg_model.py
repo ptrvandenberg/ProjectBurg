@@ -214,7 +214,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
         m.addConstr(quicksum(x_ds2[m,d] for m in dat.members) == dat.shifts[8]["crew"], "Sgt_2_Crew")
         m.addConstr(quicksum(x_ds3[m,d] for m in dat.members) <= dat.shifts[9]["crew"], "Sgt_3_Crew")
 
-    # Add the complex constraints - how to do if-then-else?
+    # Add the complex constraints
         
     # AMPL: s.t. Sequential_Shifts {d in DAY0, m in MEMBER}: (if d = 0 then shifttime[day0shift[m]] else x_dv1[d,m] * shifttime[1] + x_dv2[d,m] * shifttime[2] + x_dv3[d,m] * shifttime[3] + x_dr1[d,m] * shifttime[4] + x_dr2[d,m] * shifttime[5] + x_dr3[d,m] * shifttime[6] + x_ds1[d,m] * shifttime[7] + x_ds2[d,m] * shifttime[8] + x_ds3[d,m] * shifttime[9] + x_sg1[d,m] * shifttime[10] + x_sg2[d,m] * shifttime[11] + x_sg3[d,m] * shifttime[12] + x_sg4[d,m] * shifttime[13] + x_sf[d,m] * shifttime[14] + x_os[d,m] * shifttime[15] + x_or[d,m] * shifttime[16] + x_x[d,m] * shifttime[17]) + 8 + 10 - 24 <= (if d = week_res * weekday_res then 24 else x_dv1[d+1,m] * shifttime[1] + x_dv2[d+1,m] * shifttime[2] + x_dv3[d+1,m] * shifttime[3] + x_dr1[d+1,m] * shifttime[4] + x_dr2[d+1,m] * shifttime[5] + x_dr3[d+1,m] * shifttime[6] + x_ds1[d+1,m] * shifttime[7] + x_ds2[d+1,m] * shifttime[8] + x_ds3[d+1,m] * shifttime[9] + x_sg1[d+1,m] * shifttime[10] + x_sg2[d+1,m] * shifttime[11] + x_sg3[d+1,m] * shifttime[12] + x_sg4[d+1,m] * shifttime[13] + x_sf[d+1,m] * shifttime[14] + x_os[d+1,m] * shifttime[15]  + x_or[d+1,m] * shifttime[16]+ x_x[d+1,m] * 24);
 
