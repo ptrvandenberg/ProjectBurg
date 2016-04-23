@@ -319,8 +319,6 @@ def solve(dat, week_res, shiftweek_res, shift_res):
             else:
                 m.addConstr(x_or[m,7+7*(w-2)+1] = x_dv3[m,7+7*(w-2)] + x_dr3[m,7+7*(w-2)] + x_ds3[m,7+7*(w-2)], "Reco_Night")
 
-# PROGRESS MARK
-
     for m in dat.members:
         for w in range(1,week_res):
             for nrc in range(2,7):
@@ -346,11 +344,17 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for w in range(0,0):
-            m.addConstr(wo[m,w] = (if dat.carryover[m]["day0shift"] >= shift_res - 1 then 1 else 0) * x_x[m,1], "Weekend_Off_1fw")
+            if dat.carryover[m]["day0shift"] >= shift_res - 1:
+                m.addConstr(wo[m,w] = x_x[m,1], "Weekend_Off_1fw")
+            else:
+                m.addConstr(wo[m,w] = 0, "Weekend_Off_1fw")
 
     for m in dat.members:
         for w in range(-4,-1):
-            m.addConstr(wo[m,w] = (if dat.carryover[m]["lastWEoff"] == w then 1 else 0), "Weekend_Off_pre")
+            if dat.carryover[m]["lastWEoff"] == w:
+                m.addConstr(wo[m,w] = 1, "Weekend_Off_pre")
+            else:
+                m.addConstr(wo[m,w] = 0, "Weekend_Off_pre")
 
     for m in dat.members:
         for per in range(0,week_res):
@@ -363,10 +367,19 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for d in dat.days:
-            m.addConstr(x_sg1[m,d] = (if dat.leave[m,d]["value"] == 1 then 0 else (if dat.commitment[m,d]["value"] == 1 then 1 else x_sg1[m,d])), "Commit_1")
-            m.addConstr(x_sg2[m,d] = (if dat.leave[m,d]["value"] == 1 then 0 else (if dat.commitment[m,d]["value"] == 2 then 1 else x_sg2[m,d])), "Commit_2")
-            m.addConstr(x_sg3[m,d] = (if dat.leave[m,d]["value"] == 1 then 0 else (if dat.commitment[m,d]["value"] == 3 then 1 else x_sg3[m,d])), "Commit_3")
-            m.addConstr(x_sg4[m,d] = (if dat.leave[m,d]["value"] == 1 then 0 else (if dat.commitment[m,d]["value"] == 4 then 1 else x_sg4[m,d])), "Commit_4")
+            if dat.leave[m,d]["value"] == 1:
+                m.addConstr(x_sg1[m,d] = 0, "Commit_1")
+                m.addConstr(x_sg2[m,d] = 0, "Commit_2")
+                m.addConstr(x_sg3[m,d] = 0, "Commit_3")
+                m.addConstr(x_sg4[m,d] = 0, "Commit_4")
+            elif dat.commitment[m,d]["value"] == 1:
+                m.addConstr(x_sg1[m,d] = 1, "Commit_1")
+            elif dat.commitment[m,d]["value"] == 2:
+                m.addConstr(x_sg2[m,d] = 1, "Commit_2")
+            elif dat.commitment[m,d]["value"] == 3:
+                m.addConstr(x_sg3[m,d] = 1, "Commit_3")
+            elif dat.commitment[m,d]["value"] == 4:
+                m.addConstr(x_sg4[m,d] = 1, "Commit_4")
 
     # AMPL: s.t. FieldOut_Van {d in DAY, m in MEMBER}: x_dv[d,m] <= 1 - fieldout[d,m];
     # AMPL: s.t. FieldOut_SafStr {d in DAY, m in MEMBER}: x_os[d,m] <= 1 - fieldout[d,m];
@@ -378,6 +391,8 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     # Solve
     m.optimize()
+
+# PROGRESS MARK
 
     if m.status == GRB.status.OPTIMAL:
         sln = solutionFactory.TicDat()
