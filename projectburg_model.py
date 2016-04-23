@@ -198,21 +198,21 @@ def solve(dat, week_res, shiftweek_res, shift_res):
     # AMPL: s.t. Sgt_3_Crew {d in DAY}: sum {m in MEMBER} x_ds3[d,m] <= crew[9];
 
     for d in dat.days:
-        m.addConstr(quicksum(x_dv1[m,d] for m in dat.members) == dat.shift[1]["crew"] * (1 + y[d,1]), "Van_1_Crew")
-        m.addConstr(quicksum(x_dv2[m,d] for m in dat.members) == dat.shift[2]["crew"] * (1 + y[d,2]), "Van_2_Crew")
-        m.addConstr(quicksum(x_dv3[m,d] for m in dat.members) == dat.shift[3]["crew"] * (1 + y[d,3]), "Van_3_Crew")
-        m.addConstr(quicksum(x_dv1[m,d] for m in dat.members if dat.member[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dv1[m,d]) for m in dat.members, "Van_1_Con")
-        m.addConstr(quicksum(x_dv2[m,d] for m in dat.members if dat.member[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dv2[m,d]) for m in dat.members, "Van_2_Con")
-        m.addConstr(quicksum(x_dv3[m,d] for m in dat.members if dat.member[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dv3[m,d]) for m in dat.members, "Van_3_Con")
-        m.addConstr(quicksum(x_dr1[m,d] for m in dat.members) == dat.shift[4]["crew"], "Recep_1_Crew")
-        m.addConstr(quicksum(x_dr2[m,d] for m in dat.members) == dat.shift[5]["crew"], "Recep_2_Crew")
-        m.addConstr(quicksum(x_dr3[m,d] for m in dat.members) == dat.shift[6]["crew"], "Recep_3_Crew")
-        m.addConstr(quicksum(x_dr1[m,d] for m in dat.members if dat.member[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dr1[m,d]) for m in dat.members, "Recep_1_Con")
-        m.addConstr(quicksum(x_dr2[m,d] for m in dat.members if dat.member[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dr2[m,d]) for m in dat.members, "Recep_2_Con")
-        m.addConstr(quicksum(x_dr3[m,d] for m in dat.members if dat.member[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dr3[m,d]) for m in dat.members, "Recep_3_Con")
-        m.addConstr(quicksum(x_ds1[m,d] for m in dat.members) == dat.shift[7]["crew"], "Sgt_1_Crew")
-        m.addConstr(quicksum(x_ds2[m,d] for m in dat.members) == dat.shift[8]["crew"], "Sgt_2_Crew")
-        m.addConstr(quicksum(x_ds3[m,d] for m in dat.members) <= dat.shift[9]["crew"], "Sgt_3_Crew")
+        m.addConstr(quicksum(x_dv1[m,d] for m in dat.members) == dat.shifts[1]["crew"] * (1 + y[d,1]), "Van_1_Crew")
+        m.addConstr(quicksum(x_dv2[m,d] for m in dat.members) == dat.shifts[2]["crew"] * (1 + y[d,2]), "Van_2_Crew")
+        m.addConstr(quicksum(x_dv3[m,d] for m in dat.members) == dat.shifts[3]["crew"] * (1 + y[d,3]), "Van_3_Crew")
+        m.addConstr(quicksum(x_dv1[m,d] for m in dat.members if dat.members[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dv1[m,d]) for m in dat.members, "Van_1_Con")
+        m.addConstr(quicksum(x_dv2[m,d] for m in dat.members if dat.members[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dv2[m,d]) for m in dat.members, "Van_2_Con")
+        m.addConstr(quicksum(x_dv3[m,d] for m in dat.members if dat.members[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dv3[m,d]) for m in dat.members, "Van_3_Con")
+        m.addConstr(quicksum(x_dr1[m,d] for m in dat.members) == dat.shifts[4]["crew"], "Recep_1_Crew")
+        m.addConstr(quicksum(x_dr2[m,d] for m in dat.members) == dat.shifts[5]["crew"], "Recep_2_Crew")
+        m.addConstr(quicksum(x_dr3[m,d] for m in dat.members) == dat.shifts[6]["crew"], "Recep_3_Crew")
+        m.addConstr(quicksum(x_dr1[m,d] for m in dat.members if dat.members[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dr1[m,d]) for m in dat.members, "Recep_1_Con")
+        m.addConstr(quicksum(x_dr2[m,d] for m in dat.members if dat.members[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dr2[m,d]) for m in dat.members, "Recep_2_Con")
+        m.addConstr(quicksum(x_dr3[m,d] for m in dat.members if dat.members[m]["ranknum"] == 1) <= 0.5 * quicksum(x_dr3[m,d]) for m in dat.members, "Recep_3_Con")
+        m.addConstr(quicksum(x_ds1[m,d] for m in dat.members) == dat.shifts[7]["crew"], "Sgt_1_Crew")
+        m.addConstr(quicksum(x_ds2[m,d] for m in dat.members) == dat.shifts[8]["crew"], "Sgt_2_Crew")
+        m.addConstr(quicksum(x_ds3[m,d] for m in dat.members) <= dat.shifts[9]["crew"], "Sgt_3_Crew")
 
     # Add the complex constraints - how to do if-then-else?
         
@@ -232,7 +232,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for d in dat.days:
-            if dat.member[m]["ranknum"] != 5:
+            if dat.members[m]["ranknum"] != 5:
                 m.addConstr(x_ds[m,d] = 0, "Sgt_Rank")
             else:
                 m.addConstr(x_sg[m,d] = 1 - x_ds[m,d] - x_or[m,d] - x_x[m,d], "Sgt_Stat")
@@ -241,7 +241,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for d in dat.days:
-            if dat.member[m]["ranknum"] == 6:
+            if dat.members[m]["ranknum"] == 6:
                 m.addConstr(x_sg[m,d] = 1 - x_x[m,d], "SenSgr_Stat")
 
     # AMPL: s.t. Sgt_WE {we in 0..1, w in WEEK, m in MEMBER}: x_x[1+6*we+7*(w-1),m] = (if memrank[m] = 5 then 1 - x_ds[1+6*we+7*(w-1),m] - x_or[1+6*we+7*(w-1),m] else x_x[1+6*we+7*(w-1),m]);
@@ -249,7 +249,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
     for m in dat.members:
         for w in range(1,week_res):
             for we in range(0,1):
-                if dat.member[m]["ranknum"] == 5:
+                if dat.members[m]["ranknum"] == 5:
                     m.addConstr(x_x[m,1+6*we+7*(w-1)] = 1 - x_ds[m,1+6*we+7*(w-1)] - x_or[m,1+6*we+7*(w-1)], "Sgt_WE")
                 else:
                     m.addConstr(x_x[m,1+6*we+7*(w-1)] = x_x[m,1+6*we+7*(w-1)], "Sgt_WE")
@@ -260,7 +260,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
     for m in dat.members:
         for w in range(1,week_res):
             for we in range(0,1):
-                if dat.member[m]["ranknum"] == 6:
+                if dat.members[m]["ranknum"] == 6:
                     m.addConstr(x_x[m,1+6*we+7*(w-1)] = 1, "SenSgt_WE")
                 else:
                     m.addConstr(x_x[m,1+6*we+7*(w-1)] = x_x[m,1+6*we+7*(w-1)], "SenSgt_WE")
@@ -270,7 +270,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for d in dat.days:
         m.addConstr(x_sf[m,d] = dat.shift[14]["crew"], "Files")
-        if dat.member[m]["ranknum"] == 1:
+        if dat.members[m]["ranknum"] == 1:
             m.addConstr(x_sf[m,d] <= 0.5 * quicksum(x_sf[m,d] for m in dat.members), "Files_Con")
 
     # AMPL: s.t. SafStr_Non {nss in 1..5, w in WEEK, m in MEMBER}: x_os[nss+7*(w-1),m] = 0;
@@ -285,10 +285,10 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for ssd in range(6,7):
-            m.addConstr(quicksum(x_os[m,ssd+7*(w-1)] for m in dat.members) = dat.shift[15]["crew"], "SafStr_Crew")
+            m.addConstr(quicksum(x_os[m,ssd+7*(w-1)] for m in dat.members) = dat.shifts[15]["crew"], "SafStr_Crew")
 
     for d in dat.days:
-        m.addConstr(quicksum(x_os[m,d] for m in dat.members if dat.member[m]["ranknum"]==1) <= 0.75 * quicksum(x_os[m,d] for m in dat.members), "SafStr_Con")
+        m.addConstr(quicksum(x_os[m,d] for m in dat.members if dat.members[m]["ranknum"]==1) <= 0.75 * quicksum(x_os[m,d] for m in dat.members), "SafStr_Con")
 
     for m in dat.members:
         for w in range(1,week_res):
