@@ -1,6 +1,4 @@
-# ...
-
-# PROGRESS MARK
+# TEST DATA
 
 INSERT INTO [days] ([dayseq]) VALUES (1);
 INSERT INTO [days] ([dayseq]) VALUES (2);
@@ -29,4 +27,12 @@ INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description])
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (98,'Leave','XX',6,0,'LEAVE');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (99,'Not Rostered','XX',6,0,'REST');
 
-INSERT INTO ...
+INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (,,'','');
+
+INSERT INTO [carryover] ([memid],[lastweoff],[day0shift]) VALUES (,,);
+
+INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (,,);
+
+INSERT INTO [commitment] ([memid],[dayseq],[value]) VALUES (,,);
+
+INSERT INTO [fieldout] ([memid],[dayseq],[value]) VALUES (,,);
