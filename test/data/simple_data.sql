@@ -2,38 +2,31 @@
 
 # PROGRESS MARK
 
-INSERT INTO [commodities] ([name]) VALUES ('Pencils');
-INSERT INTO [commodities] ([name]) VALUES ('Pens');
-INSERT INTO [nodes] ([name]) VALUES ('Seattle');
-INSERT INTO [nodes] ([name]) VALUES ('Boston');
-INSERT INTO [nodes] ([name]) VALUES ('New York');
-INSERT INTO [nodes] ([name]) VALUES ('Denver');
-INSERT INTO [nodes] ([name]) VALUES ('Detroit');
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pencils','Denver','Seattle',30.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pens','Denver','Seattle',30.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pencils','Detroit','New York',20.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pens','Detroit','New York',20.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pens','Detroit','Boston',20.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pencils','Detroit','Boston',10.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pens','Detroit','Seattle',80.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pens','Denver','New York',70.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pens','Denver','Boston',60.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pencils','Denver','New York',40.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pencils','Detroit','Seattle',60.0);
-INSERT INTO [cost] ([commodity],[source],[destination],[cost]) VALUES ('Pencils','Denver','Boston',40.0);
-INSERT INTO [arcs] ([source],[destination],[capacity]) VALUES ('Detroit','Seattle',120.0);
-INSERT INTO [arcs] ([source],[destination],[capacity]) VALUES ('Denver','Seattle',120.0);
-INSERT INTO [arcs] ([source],[destination],[capacity]) VALUES ('Detroit','New York',80.0);
-INSERT INTO [arcs] ([source],[destination],[capacity]) VALUES ('Denver','New York',120.0);
-INSERT INTO [arcs] ([source],[destination],[capacity]) VALUES ('Denver','Boston',120.0);
-INSERT INTO [arcs] ([source],[destination],[capacity]) VALUES ('Detroit','Boston',100.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pens','Boston',-40.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pens','New York',-30.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pencils','Detroit',50.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pencils','Seattle',-10.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pencils','Denver',60.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pens','Detroit',60.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pens','Seattle',-30.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pens','Denver',40.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pencils','New York',-50.0);
-INSERT INTO [inflow] ([commodity],[node],[quantity]) VALUES ('Pencils','Boston',-50.0);
+INSERT INTO [days] ([dayseq]) VALUES (1);
+INSERT INTO [days] ([dayseq]) VALUES (2);
+INSERT INTO [days] ([dayseq]) VALUES (3);
+INSERT INTO [days] ([dayseq]) VALUES (4);
+INSERT INTO [days] ([dayseq]) VALUES (5);
+INSERT INTO [days] ([dayseq]) VALUES (6);
+INSERT INTO [days] ([dayseq]) VALUES (7);
+
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (1,'Daily Van','DV1',7,2,'VAN 0700');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (2,'Daily Van','DV2',15,2,'VAN 1500');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (3,'Daily Van','DV3',23,2,'VAN 2300');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (4,'Daily Reception','DR1',7,2,'REC 0700');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (5,'Daily Reception','DR2',15,2,'REC 1500');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (6,'Daily Reception','DR3',23,2,'REC 2300');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (7,'Daily Sergeant','DS1',7,1,'SGT 0700');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (8,'Daily Sergeant','DS2',15,1,'SGT 1500');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (9,'Daily Sergeant','DS3',23,1,'SGT 2300');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (10,'Station General','SG1',8,0,'STAT 0800');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (11,'Station General','SG2',10,0,'STAT 1000');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (12,'Station General','SG3',13,0,'STAT 1300');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (13,'Station General','SG4',15,0,'STAT 1500');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (14,'Station Files','SF',8,2,'FILES 0800');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (15,'Other SafeStreets','OS',22,4,'SFST 2200');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (16,'Other Recovery','OR',17,0,'RECO 1700');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (98,'Leave','XX',6,0,'LEAVE');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (99,'Not Rostered','XX',6,0,'REST');
+
+INSERT INTO ...
