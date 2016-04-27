@@ -22,7 +22,7 @@ class TestProjectBurg(unittest.TestCase):
         data_file = os.path.join(data_directory(), "simple_data.sql")
         dat = projectburg.dataFactory.sql.create_tic_dat_from_sql(data_file)
         soln = projectburg.solve(dat,1,5,18)
-        self.assertTrue(soln.utilisation[][vancrew] = 7 * 3 * 2))
+        self.assertTrue(soln.utilisation[0][vancrew] = 7 * 3 * 2))
 
         # if I put member 1 on leave for the week, then he/she should be scheduled as such
         for d in range(1,7):
@@ -31,9 +31,9 @@ class TestProjectBurg(unittest.TestCase):
         for d in range(1,7):
             self.assertTrue(soln.roster[1,d]["value"] = 17)
         # and not more members can be utilised (van crew)
-        self.assertTrue(soln.utilisation[][vancrew] >= soln.utilisation[][vancrew])
+        self.assertTrue(soln.utilisation[0][vancrew] >= soln.utilisation[0][vancrew])
 
-        # can add more simple tests
+        # can add more behavioural tests
 
 # Run the tests
 
