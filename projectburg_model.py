@@ -13,7 +13,7 @@ dataFactory = TicDatFactory (
     days = [["dayseq"], []],
     shifts = [["shiftid"], ["type", "shift", "starttime", "crew", "description"]],
     members = [["memid"], ["ranknum", "lastname", "firstname"]],
-    carryover = [["memid"], ["lastWEoff", "day0shift"]],
+    carryover = [["memid"], ["lastweoff", "day0shift"]],
     leave = [["memid", "dayseq"], ["value"]],
     commitment = [["memid", "dayseq"], ["value"]],
     fieldout = [["memid", "dayseq"], ["value"]])
@@ -351,7 +351,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     for m in dat.members:
         for w in range(-4,-1):
-            if dat.carryover[m]["lastWEoff"] == w:
+            if dat.carryover[m]["lastweoff"] == w:
                 m.addConstr(wo[m,w] == 1, "Weekend_Off_pre")
             else:
                 m.addConstr(wo[m,w] == 0, "Weekend_Off_pre")
@@ -398,12 +398,12 @@ def solve(dat, week_res, shiftweek_res, shift_res):
         for d in range(-1,week_res*7):
             for m in dat.members:
                 if d == -1:
-                    sln.roster[m,d] = dat.carryover[m]["lastWEoff"]
+                    sln.roster[m,d] = dat.carryover[m]["lastweoff"]
                 elif d == 0:
                     if dat.carryover[m]["day0shift"] >= shift_res-2:
                         sln.roster[m,d] = dat.carryover[m]["day0shift"] + 81
                     else:
                         sln.roster[m,d] = dat.carryover[m]["day0shift"]
                 else:
-                    sln.roster[m,d] = x_dv1[m,d] * 1 + x_dv2[m,d] * 2 + x_dv3[m,d] * 3 + x_dr1[m,d] * 4 + x_dr2[m,d] * 5 + x_dr3[m,d] * 6 + x_ds1[m,d] * 7 + x_ds2[m,d] * 8 + x_ds3[m,d] * 9 + x_sg1[m,d] * 10 + x_sg2[m,d] * 11 + x_sg3[m,d] * 12 + x_sg4[m,d] * 13 + x_sf[m,d] * 14 + x_os[m,d] * 15 + x_or[m,d] * 16 + dat.leave[m,d]["value"] * 98 + (x_x[m,d] - dat.leave[m,d]["value"]) * 99
+                    sln.roster[m,d] = x_dv1[m,d] * 1 + x_dv2[m,d] * 2 + x_dv3[m,d] * 3 + x_dr1[m,d] * 4 + x_dr2[m,d] * 5 + x_dr3[m,d] * 6 + x_ds1[m,d] * 7 + x_ds2[m,d] * 8 + x_ds3[m,d] * 9 + x_sg1[m,d] * 10 + x_sg2[m,d] * 11 + x_sg3[m,d] * 12 + x_sg4[m,d] * 13 + x_sf[m,d] * 14 + x_os[m,d] * 15 + x_or[m,d] * 16 + dat.leave[m,d]["value"] * 17 + (x_x[m,d] - dat.leave[m,d]["value"]) * 18
         return freeze_me(sln)
