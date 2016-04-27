@@ -32,7 +32,7 @@ dataFactory.add_foreign_key("fieldout", "days", ['dayseq', 'dayseq'])
 # Define the solution schema - 1 table.
 
 solutionFactory = TicDatFactory(
-    utilisation = [[],["VanCrew"]],
+    utilisation = [[],["vancrew"]],
     roster = [["memid", "dayseq"], ["value"]])
 
 def solve(dat, week_res, shiftweek_res, shift_res):
