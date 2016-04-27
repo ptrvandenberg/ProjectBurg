@@ -8,7 +8,7 @@ INSERT INTO [days] ([dayseq]) VALUES (5);
 INSERT INTO [days] ([dayseq]) VALUES (6);
 INSERT INTO [days] ([dayseq]) VALUES (7);
 
-INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (1,'Daily Van','DV1',7,2,'VAN 0700');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (1,'Daily Van','DV1',7,1,'VAN 0700');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (2,'Daily Van','DV2',15,2,'VAN 1500');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (3,'Daily Van','DV3',23,2,'VAN 2300');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (4,'Daily Reception','DR1',7,0,'REC 0700');
