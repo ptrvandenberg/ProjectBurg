@@ -32,7 +32,7 @@ dataFactory.add_foreign_key("fieldout", "days", ['dayseq', 'dayseq'])
 # Define the solution schema - 1 table.
 
 solutionFactory = TicDatFactory(
-    parameters = [[],["VanCrew"]],
+    utilisation = [[],["VanCrew"]],
     roster = [["memid", "dayseq"], ["value"]])
 
 def solve(dat, week_res, shiftweek_res, shift_res):
@@ -394,7 +394,7 @@ def solve(dat, week_res, shiftweek_res, shift_res):
 
     if m.status == GRB.status.OPTIMAL:
         sln = solutionFactory.TicDat()
-        sln.parameters.append(m.objVal)
+        sln.utilisation.append(m.objVal)
         for d in range(-1,week_res*7):
             for m in dat.members:
                 if d == -1:
