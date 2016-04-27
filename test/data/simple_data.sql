@@ -21,7 +21,7 @@ INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description])
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (11,'Station General','SG2',10,0,'STAT 1000');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (12,'Station General','SG3',13,0,'STAT 1300');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (13,'Station General','SG4',15,0,'STAT 1500');
-INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (14,'Station Files','SF',8,2,'FILES 0800');
+INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (14,'Station Files','SF',8,1,'FILES 0800');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (15,'Other SafeStreets','OS',22,0,'SFST 2200');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (16,'Other Recovery','OR',17,0,'RECO 1700');
 INSERT INTO [shifts] ([shiftid],[type],[shift],[starttime],[crew],[description]) VALUES (17,'Leave','XX',6,0,'LEAVE');
@@ -32,11 +32,11 @@ INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (2,1,'',
 INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (3,1,'','');
 INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (4,2,'','');
 INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (5,2,'','');
-INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (6,3,'','');
+INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (6,2,'','');
 INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (7,3,'','');
-INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (8,4,'','');
+INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (8,3,'','');
 INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (9,4,'','');
-INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (10,5,'','');
+INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (10,4,'','');
 INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (11,5,'','');
 INSERT INTO [members] ([memid],[ranknum],[lastname],[firstname]) VALUES (12,6,'','');
 
