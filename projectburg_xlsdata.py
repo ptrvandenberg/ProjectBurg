@@ -14,7 +14,7 @@ dat = dataFactory.xls.create_tic_dat("projectburgdata.xls", freeze_it=True)
 solution =  solve(dat)
 
 if solution :
-    print('\nVanCrew: %g' % solution.parameters[0]["VanCrew"])
+    print('\nVanCrew: %g' % solution.utilisation[0]["vancrew"])
     solutionFactory.xls.write_file(solution, "solution.xls", allow_overwrite=True)
 else :
     print('\nNo solution')
