@@ -114,7 +114,7 @@ INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (10,5,0);
 INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (11,5,0);
 INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (12,5,0);
 INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (1,6,0);
-INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (2,,0);
+INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (2,6,0);
 INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (3,6,0);
 INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (4,6,0);
 INSERT INTO [leave] ([memid],[dayseq],[value]) VALUES (5,6,0);
